@@ -1,62 +1,75 @@
 package main
-
+ 
 import (
-    "fmt"
-    "log"
-
-    "modbusd/config"
-    "github.com/streadway/amqp"
+	"flag"
+	"fmt"
+	"log"
+ 
+	modbus "github.com/advancedclimatesystems/goldfish"
 )
-
-func main() {
-
-    conn, err := amqp.Dial(config.RMQADDR)
-    failOnError(err, "Failed to connect to RabbitMQ")
-    defer conn.Close()
-
-    forever := make(chan struct{})
-
-    ch, err := conn.Channel()
-    failOnError(err, "Failed to open a channel")
-    defer ch.Close()
-
-    for routine := 0; routine < config.CONSUMERCNT; routine++ {
-        go func(routineNum int) {
-            err = ch.QueueBind(
-                "webq2",
-                "webq2",
-                "webex",
-                false,
-                nil,
-            )
-            failOnError(err, "Failed to bind exchange")
-
-            msgs, err := ch.Consume(
-                "webq2",
-                "",
-                true, //Auto Ack
-                false,
-                false,
-                false,
-                nil,
-            )
-
-            if err != nil {
-                log.Fatal(err)
-            }
-
-            for msg := range msgs {
-                log.Printf("In %d consume a message: %s\n", routineNum, msg.Body)
-            }
-
-        }(routine)
-    }
-
-    <-forever
+ 
+var SaveValue map[int]int
+ 
+func handleReadCoils(unitID, start, quantity int) ([]modbus.Value, error) {
+	fmt.Println("ReadCoils")
+	coils := make([]modbus.Value, quantity)
+	for i := 0; i < quantity; i++ {
+		v, err := modbus.NewValue((i + start) % 2)
+		if err != nil {
+			return coils, modbus.SlaveDeviceFailureError
+		}
+ 
+		coils[i] = v
+	}
+ 
+	return coils, nil
 }
+ 
+func handleRegisters(unitID, start, quantity int) ([]modbus.Value, error) {
+	fmt.Println("Registers")
+	registers := make([]modbus.Value, quantity)
+	for i := 0; i < quantity; i++ {
+		registers[i], _ = modbus.NewValue(SaveValue[i])
+	}
+ 
+	return registers, nil
+}
+ 
+func handleWriteRegisters(unitID, start int, values []modbus.Value) error {
+	fmt.Println("WriteRegisters")
+	for i, value := range values {
+		fmt.Printf("[%d]: %d\n", i+start, value.Get())
+		SaveValue[i+start] = value.Get()
+	}
+ 
+	return nil
+}
+ 
+func handleWriteCoils(unitID, start int, values []modbus.Value) error {
+	fmt.Println("WriteCoils")
+	if start == 1 {
+		return modbus.IllegalAddressError
+	}
+	return nil
+}
+ 
+func main() {
+	addr := flag.String("addr", ":3502", "address to listen on.")
+	flag.Parse()
+ 
+	SaveValue = make(map[int]int)
+	s, err := modbus.NewServer(*addr)
+ 
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Failed to start Modbus server: %v", err))
+	}
+ 
+	s.Handle(modbus.ReadCoils, modbus.NewReadHandler(handleReadCoils))
+	s.Handle(modbus.ReadHoldingRegisters, modbus.NewReadHandler(handleRegisters))
+	s.Handle(modbus.WriteSingleCoil, modbus.NewWriteHandler(handleWriteCoils, modbus.Signed))
+	s.Handle(modbus.WriteSingleRegister, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
+	s.Handle(modbus.WriteMultipleRegisters, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
+ 
+	s.Listen()
 
-func failOnError(err error, msg string) {
-    if err != nil {
-        fmt.Printf("%s: %s\n", msg, err)
-    }
 }

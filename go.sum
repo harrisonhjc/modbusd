@@ -1,2 +1,4 @@
+github.com/advancedclimatesystems/goldfish v0.0.0-20180913141740-7c577fff5f3f h1:q1QmjRr8BCUT41dd328fbca5nOQw7eYuvV+x+dZHAA8=
+github.com/advancedclimatesystems/goldfish v0.0.0-20180913141740-7c577fff5f3f/go.mod h1:fk+Y/vCfNUtrH2YA8bFkyenMNyo6wB6lkJGJeKmYKnI=
 github.com/streadway/amqp v1.0.0 h1:kuuDrUJFZL1QYL9hUNuCxNObNzB0bV/ZG5jV3RWAQgo=
 github.com/streadway/amqp v1.0.0/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
