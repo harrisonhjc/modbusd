@@ -26,10 +26,12 @@ func handleReadCoils(unitID, start, quantity int) ([]modbus.Value, error) {
 }
  
 func handleRegisters(unitID, start, quantity int) ([]modbus.Value, error) {
-	fmt.Println("Registers")
+	
+	fmt.Printf("ID:%d, start:%d, quantity:%d\n",unitID, start, quantity)
+
 	registers := make([]modbus.Value, quantity)
 	for i := 0; i < quantity; i++ {
-		registers[i], _ = modbus.NewValue(SaveValue[i])
+		registers[i], _ = modbus.NewValue(SaveValue[unitID*2 + start + i])
 	}
  
 	return registers, nil
@@ -63,12 +65,15 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Failed to start Modbus server: %v", err))
 	}
- 
-	s.Handle(modbus.ReadCoils, modbus.NewReadHandler(handleReadCoils))
+
+	for i := 0; i<200; i++{
+		SaveValue[i] = 3 + i
+	}
+	//s.Handle(modbus.ReadCoils, modbus.NewReadHandler(handleReadCoils))
 	s.Handle(modbus.ReadHoldingRegisters, modbus.NewReadHandler(handleRegisters))
-	s.Handle(modbus.WriteSingleCoil, modbus.NewWriteHandler(handleWriteCoils, modbus.Signed))
-	s.Handle(modbus.WriteSingleRegister, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
-	s.Handle(modbus.WriteMultipleRegisters, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
+	//s.Handle(modbus.WriteSingleCoil, modbus.NewWriteHandler(handleWriteCoils, modbus.Signed))
+	//s.Handle(modbus.WriteSingleRegister, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
+	//s.Handle(modbus.WriteMultipleRegisters, modbus.NewWriteHandler(handleWriteRegisters, modbus.Signed))
  
 	s.Listen()
 
