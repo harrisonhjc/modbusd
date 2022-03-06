@@ -56,6 +56,9 @@ func handleWriteCoils(unitID, start int, values []modbus.Value) error {
 }
  
 func main() {
+
+	go getMessage(ctx)
+
 	addr := flag.String("addr", ":3502", "address to listen on.")
 	flag.Parse()
  

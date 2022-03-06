@@ -1,36 +1,45 @@
-package main
+package mq
 
 import (
     "fmt"
     "log"
+    "context"
 
     "modbusd/config"
     "github.com/streadway/amqp"
 )
 
-func main() {
+type RtuMessage struct{
+    address string
+}
+
+func mqService(ctx context.Context, ch RtuMessage) {
 
     conn, err := amqp.Dial(config.RMQADDR)
     failOnError(err, "Failed to connect to RabbitMQ")
     defer conn.Close()
 
-    forever := make(chan struct{})
-
     ch, err := conn.Channel()
     failOnError(err, "Failed to open a channel")
     defer ch.Close()
 
-    for routine := 0; routine < config.CONSUMERCNT; routine++ {
-        go func(routineNum int) {
-            err = ch.QueueBind(
+    err = ch.QueueBind(
                 "webq2",
                 "webq2",
                 "webex",
                 false,
                 nil,
             )
-            failOnError(err, "Failed to bind exchange")
+    failOnError(err, "Failed to bind exchange")
 
+            
+    for{
+        select{
+        case <-ctx.Done():
+            log.Println("mqService got ctx.Done and exit.")
+            return
+
+        default:
             msgs, err := ch.Consume(
                 "webq2",
                 "",
@@ -46,13 +55,17 @@ func main() {
             }
 
             for msg := range msgs {
-                log.Printf("In %d consume a message: %s\n", routineNum, msg.Body)
+                RtuMessage <- msg
+                log.Printf("Consume a message: %s\n", msg.Body)
             }
 
-        }(routine)
+        }
     }
+            
 
-    <-forever
+    
+
+    
 }
 
 func failOnError(err error, msg string) {
