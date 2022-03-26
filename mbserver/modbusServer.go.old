@@ -1,15 +1,16 @@
 package mdserver
 
-mport (
-	"flag"
+import (
+	//"flag"
 	"fmt"
-	"log"
- 	"modbusd/rtu"
+	//"log"
+	"context"
+ 	//"modbusd/rtu"
 
 	modbus "github.com/advancedclimatesystems/goldfish"
 )
 
-func ModbusServer(){
+func NewModbusServer(ctx context.Context){
 	addr := flag.String("addr", ":3502", "address to listen on.")
 	flag.Parse()
  
