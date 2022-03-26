@@ -15,6 +15,9 @@ import (
 func NewModbusServer(ctx context.Context){
 	
 	s := mbserver.NewServer()
+	//3:ReadHoldingRegisters
+	s.RegisterFunctionHandler(3, handleRegisters)
+
 	err := s.ListenRTU(&serial.Config{
 		Address:  "/dev/serial1",
 		BaudRate: 115200,
@@ -36,6 +39,27 @@ func NewModbusServer(ctx context.Context){
 	}
 
 	defer s.Close()
+}
+
+func handleRegisters(s *Server, frame Framer) ([]byte, *Exception){
+
+	register, numRegs, endRegister := frame.registerAddressAndNumber()
+        // Check the request is within the allocated memory
+        if endRegister > 65535 {
+            return []byte{}, &IllegalDataAddress
+        }
+        dataSize := numRegs / 8
+        if (numRegs % 8) != 0 {
+            dataSize++
+        }
+        data := make([]byte, 1+dataSize)
+        data[0] = byte(dataSize)
+        for i := range s.DiscreteInputs[register:endRegister] {
+            // Return all 1s, regardless of the value in the DiscreteInputs array.
+            shift := uint(i) % 8
+            data[1+i/8] |= byte(1 << shift)
+        }
+        return data, &Success
 }
 /*
 func handleRegisters(unitID, start, quantity int) ([]modbus.Value, error) {
