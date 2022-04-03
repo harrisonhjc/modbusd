@@ -2,10 +2,11 @@ package main
  
 import (
 	//"flag"
-	"fmt"
+	//"fmt"
+	"time"
 	"log"
  	"modbusd/rtu"
- 	"modbusd/mbserver"
+ 	"modbusd/modbusx"
  	"context"
 )
  
@@ -23,8 +24,11 @@ func main() {
 	//	log.Println(v)
 	//}
 
-	//mbserver.NewModbusServer(ctx)	
-	//<-chWait
-
+	serv := modbusx.NewModbusServer(ctx)	
+	time.Sleep(8 * time.Second)
+	modbusx.NewModbusClient(ctx)
+	<-chWait
+	serv.Close()
+	log.Println("main -----")
 }
 
