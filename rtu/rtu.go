@@ -22,9 +22,9 @@ type RTUS struct{
 }
 
 
-func(rtu *RTUS) GetRTU() {
+func(rtus *RTUS) GetRTU() {
 
-	rtu.RTUs = make(map[int]RTU)
+	rtus.RTUs = make(map[int]RTU)
 	file, err := os.Open("./rtu.db")
  
 	if err != nil {
@@ -44,16 +44,18 @@ func(rtu *RTUS) GetRTU() {
  	for _, eachline := range txtlines {
  		str := strings.Split(eachline, ":")
  		cmd := str[0]
- 		addr := str[1]
- 		id, err := strconv.Atoi(str[2])
- 		length, err1:= strconv.Atoi(str[3])
+ 		system, _ := strconv.Atoi(str[1])
+ 		addr := str[2]
+ 		l, err := strconv.Atoi(str[3])
+ 		v, err1 := strconv.Atoi(str[4])
  		if len(addr) > 0 && err ==nil && err1 == nil{
  			rtu := RTU{
  				cmd: cmd,
+ 				system: system,
  				address: addr,
- 				length: length,
- 				value: 0}	
- 			rtu.RTUs[id] = rtu
+ 				loop: l,
+ 				value: v}	
+ 			rtus.RTUs[9] = rtu
  			
  		} 
 	}

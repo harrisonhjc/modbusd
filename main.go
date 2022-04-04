@@ -9,6 +9,10 @@ import (
  	"modbusd/rtu"
  	"modbusd/modbusx"
  	"modbusd/msgserver"
+ 
+ 	"os"
+    "os/signal"
+    "syscall"
  	
 )
  
@@ -19,14 +23,14 @@ func main() {
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	chData := make(chan RTU)
+	chData := make(chan rtu.RTU)
 	defer close(chData)
 	//go getMessage(ctx)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	rtu.GetRTU()
+	//rtu.GetRTU()
 
-	msgserver.NewServer(8081, chData)
+	msgserver.NewServer(ctx, 8081, chData)
 	//for _, v := range rtu.RTUs{
 	//	log.Println(v)
 	//}
@@ -35,7 +39,8 @@ func main() {
 	defer serv.Close()
 
 	time.Sleep(4 * time.Second)
-	modbusx.WriteRegisters(ctx)
+	data := []byte{0,3,0,4,0,5,0,6}
+	modbusx.WriteRegisters(ctx, 0, 4, data)
 	
 	<-quit
 	
