@@ -13,7 +13,7 @@ import (
 	"github.com/goburrow/modbus"
 )
 
-func NewModbusClient(ctx context.Context) {
+func WriteRegisters(ctx context.Context,address int, count int, value []byte) {
 	
 	handler := modbus.NewTCPClientHandler("localhost:3502")
 	// Connect manually so that multiple requests are handled in one session
@@ -21,12 +21,12 @@ func NewModbusClient(ctx context.Context) {
 	defer handler.Close()
 	client := modbus.NewClient(handler)
 
-	_, err = client.WriteMultipleRegisters(8, 3, []byte{0, 3, 0, 4, 0, 5})
+	_, err = client.WriteMultipleRegisters(address, count, value)
 	if err != nil {
 		log.Printf("%v\n", err)
 	}
 
-	results, err := client.ReadHoldingRegisters(8, 3)
+	results, err := client.ReadHoldingRegisters(address, count)
 	if err != nil {
 		log.Printf("%v\n", err)
 	}

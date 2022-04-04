@@ -10,16 +10,21 @@ import (
 )
 
 type RTU struct {
+	cmd		string
+	system  int 
 	address string
-	length	int
+	loop    int 
 	value   int
 }
 
-var RTUs map[int]RTU
+type RTUS struct{
+	RTUs map[int]RTU
+}
 
-func GetRTU() {
 
-	RTUs = make(map[int]RTU)
+func(rtu *RTUS) GetRTU() {
+
+	rtu.RTUs = make(map[int]RTU)
 	file, err := os.Open("./rtu.db")
  
 	if err != nil {
@@ -38,16 +43,17 @@ func GetRTU() {
  	
  	for _, eachline := range txtlines {
  		str := strings.Split(eachline, ":")
- 		var addr string
- 		addr = str[0]
- 		id, err := strconv.Atoi(str[1])
- 		length, err1:= strconv.Atoi(str[2])
+ 		cmd := str[0]
+ 		addr := str[1]
+ 		id, err := strconv.Atoi(str[2])
+ 		length, err1:= strconv.Atoi(str[3])
  		if len(addr) > 0 && err ==nil && err1 == nil{
  			rtu := RTU{
+ 				cmd: cmd,
  				address: addr,
  				length: length,
  				value: 0}	
- 			RTUs[id] = rtu
+ 			rtu.RTUs[id] = rtu
  			
  		} 
 	}

@@ -19,9 +19,13 @@ func NewModbusServer(ctx context.Context) (serv *mbserver.Server) {
 	if err != nil {
 		log.Printf("%v\n", err)
 	}
+	err = serv.ListenTCP("0.0.0.0:1502")
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
 	
 	err = serv.ListenRTU(&serial.Config{
-		Address:  "/dev/ttys000",
+		Address:  "/dev/ttyS0",
 		BaudRate: 115200,
 		DataBits: 8,
 		StopBits: 1,

@@ -1,11 +1,12 @@
-//rtu_address:device_id:data_length
-10021:1:2
-10031:2:2
-10041:3:2
-10051:4:2
-10061:5:2
-10071:6:2
-10081:7:2
-10091:8:2
-10022:9:2
-10023:10:2 
+//RTU mapping table
+//電文種類:系統:地址:回:start_modbus_address(hexdecimal)
+//Holding Registers
+//modbus address = (系統-1)x64+地址+1
+J0:1:000:0001
+J1:1:000:0001
+C0:1:0001:0401
+//read discrete input 
+F0:1:0001:0001
+T0:1:0001:4001
+B0:0:001:8001
+F1:1:000:83c1
