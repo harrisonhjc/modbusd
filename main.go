@@ -7,7 +7,7 @@ import (
 	"log"
 	"context"
  	"modbusd/rtu"
- 	"modbusd/modbusx"
+ 	"modbusd/mbserver"
  	"modbusd/msgserver"
  
  	"os"
@@ -35,12 +35,12 @@ func main() {
 	//	log.Println(v)
 	//}
 
-	serv := modbusx.NewModbusServer(ctx)	
+	serv := mbserver.NewModbusServer(ctx)	
 	defer serv.Close()
 
 	time.Sleep(4 * time.Second)
 	data := []byte{0,3,0,4,0,5,0,6}
-	modbusx.WriteRegisters(ctx, 0, 4, data)
+	mbserver.WriteRegisters(ctx, 0, 4, data)
 	
 	<-quit
 	

@@ -35,20 +35,20 @@ func(s *MsgServer) Run() {
 
 func(s *MsgServer) rtuHandler(c *gin.Context) {
     cmd := c.GetHeader("cmd")
-    sys := c.GetHeader("system")
-    a := c.GetHeader("address")
-    l := c.GetHeader("loop")
-    v := c.GetHeader("value")
-    co := c.GetHeader("code")
+    sys, _:= strconv.Atoi(c.GetHeader("system"))
+    a, _:= strconv.Atoi(c.GetHeader("address"))
+    l, _ := strconv.Atoi(c.GetHeader("loop"))
+    v, _ := strconv.Atoi(c.GetHeader("value"))
+    co, _ := strconv.Atoi(c.GetHeader("code"))
     r := rtu.RTU {
         Cmd: cmd,
-        System: strconv.Atoi(sys),
+        System: sys,
         Address: a,
         Loop: l,
         Value: v, 
         Code: co,
     }
     
-    log.Println(cmd, system, rtuAddress, data)
+    log.Println(r)
 }
 
