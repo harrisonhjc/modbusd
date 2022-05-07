@@ -5,9 +5,9 @@ import (
 	//"fmt"
 	"log"
 	"context"
-	"time"
+	//"time"
  	//"modbusd/rtu"
-	"github.com/goburrow/serial"
+	//"github.com/goburrow/serial"
 )
 
 func NewModbusServer(ctx context.Context) (serv *Server) {
@@ -52,7 +52,7 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
     
 
 
-	
+	/*
 	err = serv.ListenRTU(&serial.Config{
 		Address:  "/dev/ttyUSB0",
 		BaudRate: 115200,
@@ -63,7 +63,7 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 	if err != nil {
 		log.Fatalf("failed to listen, got %v\n", err)
 	}
-	
+	*/
 	/*
 	err = serv.ListenRTU(&serial.Config{
 		Address:  "/dev/ttyACM0",
