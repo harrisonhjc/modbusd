@@ -1,24 +1,22 @@
 package main
- 
+
 import (
 	//"flag"
 	//"fmt"
-	"time"
-	"log"
 	"context"
- 	"modbusd/rtu"
- 	"modbusd/mbserver"
- 	"modbusd/msgserver"
- 
- 	"os"
-    "os/signal"
-    "syscall"
- 	
+	"log"
+	"modbusd/mbserver"
+	"modbusd/msgserver"
+	"modbusd/rtu"
+	"time"
+
+	"os"
+	"os/signal"
+	"syscall"
 )
- 
+
 var SaveValue map[int]int
- 
- 
+
 func main() {
 
 	quit := make(chan os.Signal, 1)
@@ -30,20 +28,22 @@ func main() {
 	defer cancel()
 	//rtu.GetRTU()
 
-	msgserver.NewServer(ctx, 8081, chData)
+	msgServer := msgserver.NewServer(ctx, 8081, chData)
+	go msgServer.Run()
+	log.Println("MSG Server Start...")
 	//for _, v := range rtu.RTUs{
 	//	log.Println(v)
 	//}
 
-	serv := mbserver.NewModbusServer(ctx)	
+	serv := mbserver.NewModbusServer(ctx)
 	defer serv.Close()
+	log.Println("ModBusd Server Start...")
 
 	time.Sleep(4 * time.Second)
-	data := []byte{0,3,0,4,0,5,0,6}
+	data := []byte{0, 3, 0, 4, 0, 5, 0, 6}
 	mbserver.WriteRegisters(ctx, 0, 4, data)
-	
+
 	<-quit
-	
+
 	log.Println("Shutdown Server ...")
 }
-
