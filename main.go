@@ -30,7 +30,7 @@ func main() {
 
 	msgServer := msgserver.NewServer(ctx, 8081, chData)
 	go msgServer.Run()
-	log.Println("MSG Server Start...")
+	log.Println("HTTP Server Start...")
 	//for _, v := range rtu.RTUs{
 	//	log.Println(v)
 	//}
