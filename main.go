@@ -39,11 +39,10 @@ func main() {
 	defer serv.Close()
 	log.Println("ModBusd Server Start...")
 
-	time.Sleep(4 * time.Second)
+	time.Sleep(2 * time.Second)
 	data := []byte{0, 3, 0, 4, 0, 5, 0, 6}
 	mbserver.WriteRegisters(ctx, 0, 4, data)
 
 	<-quit
-
 	log.Println("Shutdown Server ...")
 }
