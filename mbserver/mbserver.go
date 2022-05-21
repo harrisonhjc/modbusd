@@ -52,20 +52,18 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 	i = 1
 	serv.DiscreteInputs[i] = i
 
-	/*
-		err = serv.ListenRTU(&serial.Config{
-			Address:  "/dev/ttyUSB0",
-			BaudRate: 115200,
-			DataBits: 8,
-			StopBits: 1,
-			Parity:   "N",
-			Timeout:  10 * time.Second})
-		if err != nil {
-			log.Fatalf("failed to listen, got %v\n", err)
-		}
-	*/
-
 	err = serv.ListenRTU(&serial.Config{
+		Address:  "/dev/ttyAMA0",
+		BaudRate: 115200,
+		DataBits: 8,
+		StopBits: 1,
+		Parity:   "N",
+		Timeout:  10 * time.Second})
+	if err != nil {
+		log.Fatalf("failed to listen, got %v\n", err)
+	}
+
+	/*err = serv.ListenRTU(&serial.Config{
 		Address:  "/dev/ttyAMA0",
 		BaudRate: 9600,
 		DataBits: 8,
@@ -83,7 +81,7 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 	})
 	if err != nil {
 		log.Fatalf("failed to listen, got %v\n", err)
-	}
+	}*/
 
 	//defer serv.Close()
 	return
