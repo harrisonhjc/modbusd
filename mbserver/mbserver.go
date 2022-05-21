@@ -58,7 +58,7 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 		DataBits: 8,
 		StopBits: 1,
 		Parity:   "N",
-		Timeout:  10 * time.Second})
+		Timeout:  100 * time.Second})
 	if err != nil {
 		log.Fatalf("failed to listen, got %v\n", err)
 	}
