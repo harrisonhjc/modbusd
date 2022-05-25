@@ -5,9 +5,6 @@ import (
 	//"fmt"
 	"context"
 	"log"
-	"time"
-
-	"github.com/goburrow/serial"
 	//"time"
 	//"modbusd/rtu"
 	//"github.com/goburrow/serial"
@@ -48,11 +45,11 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 		    })
 	*/
 	//set discrete input value
-	var i byte
-	i = 1
-	serv.DiscreteInputs[i] = i
+	// var i byte
+	// i = 1
+	// serv.DiscreteInputs[i] = i
 
-	err = serv.ListenRTU(&serial.Config{
+	/*err = serv.ListenRTU(&serial.Config{
 		Address:  "/dev/ttyAMA0",
 		BaudRate: 115200,
 		DataBits: 8,

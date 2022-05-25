@@ -28,16 +28,18 @@ func main() {
 	defer cancel()
 	//rtu.GetRTU()
 
-	msgServer := msgserver.NewServer(ctx, 8081, chData)
+	serv := mbserver.NewModbusServer(ctx)
+	defer serv.Close()
+	log.Println("ModBusd Server Start...")
+
+	c2 := context.WithValue(ctx, "modBusServ", serv)
+
+	msgServer := msgserver.NewServer(c2, 8081, chData)
 	go msgServer.Run()
 	log.Println("HTTP Server Start...")
 	//for _, v := range rtu.RTUs{
 	//	log.Println(v)
 	//}
-
-	serv := mbserver.NewModbusServer(ctx)
-	defer serv.Close()
-	log.Println("ModBusd Server Start...")
 
 	time.Sleep(2 * time.Second)
 	data := []byte{0, 3, 0, 4, 0, 5, 0, 6}
