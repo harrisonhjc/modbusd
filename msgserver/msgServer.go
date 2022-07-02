@@ -18,9 +18,8 @@ type MsgServer struct {
 	chData chan rtu.RTU
 	Rtus   rtu.RTUS
 	Ctx    context.Context
+	Mutex  sync.Mutex
 }
-
-var m *sync.Mutex
 
 func NewServer(ctx context.Context, port int, ch chan rtu.RTU) *MsgServer {
 
@@ -41,7 +40,6 @@ func (s *MsgServer) Run() {
 }
 
 func (s *MsgServer) rtuHandler(c *gin.Context) {
-	m.Lock()
 
 	cmd := c.GetHeader("cmd")
 	sys, _ := strconv.Atoi(c.GetHeader("system"))
@@ -76,6 +74,7 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 		log.Println("WriteRegisters ")
 		modBusAddress = (address)/4 + 1 + (system-1)*64
 
+		s.Mutex.Lock()
 		var getRegistersData []byte = mbserver.ReadRegisters(ctx, uint16(modBusAddress)-1, 1)
 		var s1, s2 string
 
@@ -108,9 +107,12 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 
 		mbserver.WriteRegisters(ctx, uint16(modBusAddress)-1, 1, writeRegistersData)
 
+		s.Mutex.Unlock()
+
 	case "C0":
 		modBusAddress = 1024 + address + 1 + (system-1)*256
 
+		s.Mutex.Lock()
 		var getRegistersData []byte = mbserver.ReadRegisters(ctx, uint16(modBusAddress)-1, 1)
 		var s1, s2 string
 
@@ -142,19 +144,28 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 		writeRegistersData := []byte{uint8(i1), uint8(i2)}
 
 		mbserver.WriteRegisters(ctx, uint16(modBusAddress)-1, 1, writeRegistersData)
+		s.Mutex.Unlock()
 
 	case "F0":
 		modBusAddress = address*4 + loop + (system-1)*1024
 
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
+
+		s.Mutex.Lock()
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
+		s.Mutex.Unlock()
+
 		mbserver.ReadtheDiscreteInputs(ctx, 0, 2000)
 
 	case "T0":
 		modBusAddress = 16384 + address*4 + loop + (system-1)*1024
 
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
+
+		s.Mutex.Lock()
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
+		s.Mutex.Unlock()
+
 		mbserver.ReadtheDiscreteInputs(ctx, 0, 2000)
 
 	case "B0":
@@ -163,13 +174,19 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 			modBusAddress = modBusAddress + (system)*2
 		}
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
+
+		s.Mutex.Lock()
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
+		s.Mutex.Unlock()
 
 	case "F1":
 		modBusAddress = 33728 + system
 
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
+
+		s.Mutex.Lock()
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
+		s.Mutex.Unlock()
 
 	default:
 		log.Println("No Cmd Pares ")
@@ -179,6 +196,4 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 
 		return
 	}
-	m.Unlock()
-
 }

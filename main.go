@@ -8,7 +8,6 @@ import (
 	"modbusd/mbserver"
 	"modbusd/msgserver"
 	"modbusd/rtu"
-	"time"
 
 	"os"
 	"os/signal"
@@ -41,9 +40,9 @@ func main() {
 	//	log.Println(v)
 	//}
 
-	time.Sleep(2 * time.Second)
-	data := []byte{0, 3, 0, 4, 0, 5, 0, 6}
-	mbserver.WriteRegisters(ctx, 0, 4, data)
+	// time.Sleep(2 * time.Second)
+	// data := []byte{0, 3, 0, 4, 0, 5, 0, 6}
+	// mbserver.WriteRegisters(ctx, 0, 4, data)
 
 	<-quit
 	log.Println("Shutdown Server ...")
