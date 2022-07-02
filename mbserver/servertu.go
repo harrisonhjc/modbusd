@@ -3,6 +3,7 @@ package mbserver
 import (
 	"io"
 	"log"
+	"strings"
 
 	"github.com/goburrow/serial"
 )
@@ -38,6 +39,11 @@ func (s *Server) acceptSerialRequests(port serial.Port) {
 
 		bytesRead, err := port.Read(buffer)
 		if err != nil {
+			if strings.Contains(err.Error(), "timeout"){
+				log.Printf("serial read timeout\n")
+				continue SkipFrameError
+			}
+
 			if err != io.EOF {
 				log.Printf("serial read error %v\n", err)
 			}
