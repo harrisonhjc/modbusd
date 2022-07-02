@@ -5,9 +5,10 @@ import (
 	//"fmt"
 	"context"
 	"log"
-	//"time"
+	"time"
+
+	"github.com/goburrow/serial"
 	//"modbusd/rtu"
-	//"github.com/goburrow/serial"
 )
 
 func NewModbusServer(ctx context.Context) (serv *Server) {
@@ -49,13 +50,13 @@ func NewModbusServer(ctx context.Context) (serv *Server) {
 	// i = 1
 	// serv.DiscreteInputs[i] = i
 
-	/*err = serv.ListenRTU(&serial.Config{
+	err = serv.ListenRTU(&serial.Config{
 		Address:  "/dev/ttyAMA0",
-		BaudRate: 115200,
+		BaudRate: 9600,
 		DataBits: 8,
 		StopBits: 1,
 		Parity:   "N",
-		Timeout:  100 * time.Second})
+		Timeout:  10 * time.Second})
 	if err != nil {
 		log.Fatalf("failed to listen, got %v\n", err)
 	}
