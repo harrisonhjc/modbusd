@@ -8,6 +8,7 @@ import (
 	"modbusd/rtu"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,8 @@ type MsgServer struct {
 	Rtus   rtu.RTUS
 	Ctx    context.Context
 }
+
+var m *sync.Mutex
 
 func NewServer(ctx context.Context, port int, ch chan rtu.RTU) *MsgServer {
 
@@ -38,6 +41,8 @@ func (s *MsgServer) Run() {
 }
 
 func (s *MsgServer) rtuHandler(c *gin.Context) {
+	m.Lock()
+
 	cmd := c.GetHeader("cmd")
 	sys, _ := strconv.Atoi(c.GetHeader("system"))
 	a, _ := strconv.Atoi(c.GetHeader("address"))
@@ -143,13 +148,14 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
-		mbserver.ReadtheDiscreteInputs(ctx, 0, 1024)
+		mbserver.ReadtheDiscreteInputs(ctx, 0, 2000)
 
 	case "T0":
 		modBusAddress = 16384 + address*4 + loop + (system-1)*1024
 
 		serv := s.Ctx.Value("modBusServ").(*mbserver.Server)
 		serv.DiscreteInputs[modBusAddress-1] = byte(uint8(r.Value))
+		mbserver.ReadtheDiscreteInputs(ctx, 0, 2000)
 
 	case "B0":
 		modBusAddress = 32768 + code + (system)*54
@@ -169,9 +175,10 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 		log.Println("No Cmd Pares ")
 		log.Println("ReadRegisters : ")
 		mbserver.ReadRegisters(ctx, 0, 20)
-		mbserver.ReadtheDiscreteInputs(ctx, 0, 1024)
+		mbserver.ReadtheDiscreteInputs(ctx, 0, 2000)
 
 		return
 	}
+	m.Unlock()
 
 }
