@@ -123,13 +123,50 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 
 		switch loop {
 		case 1:
-			s2 = s2[0:4] + value
+			switch code {
+			case 1:
+				s2 = s2[0:7] + value
+			case 2:
+				s2 = s2[0:6] + value + s2[7:8]
+			case 3:
+				s2 = s2[0:5] + value + s2[6:8]
+			case 4:
+				s2 = s2[0:4] + value + s2[5:8]
+			}
+
 		case 2:
-			s2 = value + s2[4:8]
+			switch code {
+			case 1:
+				s2 = s2[0:3] + value + s2[4:8]
+			case 2:
+				s2 = s2[0:2] + value + s2[3:8]
+			case 3:
+				s2 = s2[0:1] + value + s2[2:8]
+			case 4:
+				s2 = value + s2[1:8]
+			}
 		case 3:
-			s1 = s1[0:4] + value
+			switch code {
+			case 1:
+				s1 = s1[0:7] + value
+			case 2:
+				s1 = s1[0:6] + value + s1[7:8]
+			case 3:
+				s1 = s1[0:5] + value + s1[6:8]
+			case 4:
+				s1 = s1[0:4] + value + s1[5:8]
+			}
 		case 4:
-			s1 = value + s1[4:8]
+			switch code {
+			case 1:
+				s1 = s1[0:3] + value + s1[4:8]
+			case 2:
+				s1 = s1[0:2] + value + s1[3:8]
+			case 3:
+				s1 = s1[0:1] + value + s1[2:8]
+			case 4:
+				s1 = value + s1[1:8]
+			}
 		}
 		i1, err1 := strconv.ParseInt(s1, 2, 64)
 		i2, err2 := strconv.ParseInt(s2, 2, 64)
