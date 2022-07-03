@@ -118,53 +118,55 @@ func (s *MsgServer) rtuHandler(c *gin.Context) {
 
 		s1 = strings.Trim(fmt.Sprintf("% 09b", getRegistersData[0]), " ")
 		s2 = strings.Trim(fmt.Sprintf("% 09b", getRegistersData[1]), " ")
+		value := strings.Trim(fmt.Sprintf("% 02b", r.Value), " ")
+
 		fmt.Println(s1 + s2)
 		fmt.Println(value)
 
 		switch loop {
 		case 1:
 			switch code {
-			case 1:
+			case 0:
 				s2 = s2[0:7] + value
-			case 2:
+			case 1:
 				s2 = s2[0:6] + value + s2[7:8]
-			case 3:
+			case 2:
 				s2 = s2[0:5] + value + s2[6:8]
-			case 4:
+			case 3:
 				s2 = s2[0:4] + value + s2[5:8]
 			}
 
 		case 2:
 			switch code {
-			case 1:
+			case 0:
 				s2 = s2[0:3] + value + s2[4:8]
-			case 2:
+			case 1:
 				s2 = s2[0:2] + value + s2[3:8]
-			case 3:
+			case 2:
 				s2 = s2[0:1] + value + s2[2:8]
-			case 4:
+			case 3:
 				s2 = value + s2[1:8]
 			}
 		case 3:
 			switch code {
-			case 1:
+			case 0:
 				s1 = s1[0:7] + value
-			case 2:
+			case 1:
 				s1 = s1[0:6] + value + s1[7:8]
-			case 3:
+			case 2:
 				s1 = s1[0:5] + value + s1[6:8]
-			case 4:
+			case 3:
 				s1 = s1[0:4] + value + s1[5:8]
 			}
 		case 4:
 			switch code {
-			case 1:
+			case 0:
 				s1 = s1[0:3] + value + s1[4:8]
-			case 2:
+			case 1:
 				s1 = s1[0:2] + value + s1[3:8]
-			case 3:
+			case 2:
 				s1 = s1[0:1] + value + s1[2:8]
-			case 4:
+			case 3:
 				s1 = value + s1[1:8]
 			}
 		}
